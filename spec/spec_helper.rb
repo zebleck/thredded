@@ -69,7 +69,9 @@ Dir[Rails.root.join('..', '..', 'spec', 'support', '**', '*.rb')].each { |f| req
 RSpec.configure do |config| # rubocop:disable Metrics/BlockLength
   if ENV['MIGRATION_SPEC']
     config.filter_run_excluding migration_spec: false
+    config.use_transactional_fixtures = false
   else
+    config.use_transactional_fixtures = true
     config.filter_run_excluding migration_spec: true
   end
   config.infer_spec_type_from_file_location!
@@ -91,40 +93,14 @@ RSpec.configure do |config| # rubocop:disable Metrics/BlockLength
         DatabaseCleaner.clean
       end
     end
-  else
-    config.before(:suite) do
-      Thredded::DbTools.silence_active_record do
-        # TODO: drop database cleaner and use Rails system specs
-        DatabaseCleaner.clean_with(:truncation)
-      end
-      ActiveJob::Base.queue_adapter = :inline
-    end
+  end
 
-    config.before do
-      DatabaseCleaner.strategy = :transaction
-    end
+  config.before(:suite) do
+    ActiveJob::Base.queue_adapter = :inline
+  end
 
-    config.before(:each, type: :feature) do
-      # :rack_test driver's Rack app under test shares database connection
-      # with the specs, so continue to use transaction strategy for speed.
-      shared_db_connection = Capybara.current_driver == :rack_test
-
-      unless shared_db_connection
-        # Driver is probably for an external browser with an app
-        # under test that does *not* share a database connection with the
-        # specs, so use truncation strategy.
-        DatabaseCleaner.strategy = :truncation, { cache_tables: true }
-      end
-    end
-
-    config.before do
-      Time.zone = 'UTC'
-      DatabaseCleaner.start
-    end
-
-    config.append_after do
-      DatabaseCleaner.clean
-    end
+  config.before do
+    Time.zone = 'UTC'
   end
 end
 
