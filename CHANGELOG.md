@@ -1,5 +1,7 @@
 # Unreleased
 
+* Drop support for Rails < 5.2
+
 See the full list of changes here: https://github.com/thredded/thredded/compare/v1.0.0...master
 
 # v1.0.0
