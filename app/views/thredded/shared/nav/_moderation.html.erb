@@ -5,7 +5,7 @@
       <%= inline_svg_tag 'thredded/moderation.svg',
                          class: 'thredded--icon',
                          title: t('thredded.nav.moderation') %>
-      <span class="thredded--nav-text"><%= t 'thredded.nav.moderation' %></span>
+      <span class="thredded--nav-text">TEST TEST <%= t 'thredded.nav.moderation' %></span>
       <% if posts_pending_moderation_count > 0 %>
         <span class="thredded--user-navigation--moderation--pending-count"><%= posts_pending_moderation_count %></span>
       <% end %>
